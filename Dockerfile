@@ -1,5 +1,5 @@
-#FROM php:8-apache
-FROM php:apache-bullseye
+FROM php:8-apache
+#FROM php:apache-bullseye
 
 LABEL maintainer Carlos Burguillo cburguillo@mmto.org
 
