@@ -1,33 +1,27 @@
-name: build and push
+name: Docker Image CI for GHCR
 
-on:  
+on:
   push:
-    # Publish `master` as Docker `latest` image.
     branches:
       - main
-    # Publish `v1.2.3` tags as releases.
+      - master
     tags:
       - v*
-  # Run tests for any PRs.
-  # pull_request:
 
 env:
-  IMAGE_NAME: mmtserv
+  IMAGE_NAME: ${{ github.event.repository.name }}
 
 jobs:
-  push:
+  build_and_publish:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
     steps:
-      - uses: actions/checkout@v3
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-      - name: Log in to registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
-      - name: Push image
+      - uses: actions/checktout@v3
+      - name: Build and push the image
         run: |
+          # Log into registry
+          docker login --username $ --password ${{ secrets.GH_PAT }} ghcr.io
+          # Build Image
+          docker build . --tag {{ IMAGE_NAME }} --label "runnumber=${GITHUB_RUN_ID}"
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
